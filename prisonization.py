@@ -229,8 +229,8 @@ x = round(prisPct*grid.getLocationCount())
 loopCount = 0
 while x > 0:
     loopCount += 1
-    row = random.randint(0,grid.size)
-    col = random.randint(0,grid.size)
+    row = random.randint(0,grid.size-1)
+    col = random.randint(0,grid.size-1)
     agent = grid.getAgent(row, col)
     if agent.isPrisonized() == False:
         agent.features.setTrait(0,1)
