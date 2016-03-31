@@ -52,6 +52,44 @@ class Features(object):
     def setTrait(self, which, val):
         self.curTraits[which] = val
 
+'''
+Agent class:
+    Object vars:
+        * grid - a reference to the grid in which the agent is located
+        * row - row of the grid in which the agent is located
+        * col - column of the grid in which the agent is located
+        * features - the features object
+
+    Object methods:
+        * printTraits - prints to console the current traits for this agent
+        * influencePossible - returns a boolean value indicating whether the
+            agent could be influenced by any of its neighbors
+        * isInfluenced(neighbor) - returns a boolean value indicating whether
+            a new interaction with a given neighbor causes the agent to be
+            influenced
+        * isPrisonized - returns a boolean value indicating whether the agent
+            is currently prisionized
+        * similarity(neighbor) - returns a similarity index from 0.0 to 1.0
+            indicating the agent's cultural similarity to the given neighbor
+        * differingTraits(neighbor) - returns an array containing values of the
+            features for which the agent and the given neighbor do not share
+            the same trait
+        * inheritTrait(neighbor) - causes the agent to inherit a randomly
+            selected feature trait from the given neighbor
+        * executeModel - selects a random neighbor, tests whether the agent
+            is influenced, and if it is, causes the agent to inherit a trait
+            from that neighbor
+'''
+class Agent(object):
+
+    def __init__(self, row, col, grid):
+        self.grid = grid
+        self.row = row
+        self.col = col
+        self.features = Features()
+
+    def printTraits(self):
+        print self.features.curTraits
 
     def influencePossible(self):
         # Get all neighbors
@@ -160,6 +198,25 @@ class Grid(object):
                 if(self.getAgent(x, y).influencePossible()):
                     return False
         return True
+
+# Parameters
+
+gridSize = 3
+prisPct = 0.2
+contagion = 1
+
+'''
+Set the possible trait counts for the features. In this case, prisionization
+is binary while the other features have some other abitrary number of traits
+associated with them.
+'''
+traitCounts = [2,3,3,3]
+
+'''
+Initialize the features class with the number of different traits for each of
+the features and the initial relative prisionization rate.
+'''
+Features.init(traitCounts)
 
 # Initialize the grid size, add agents
 grid = Grid(gridSize)
