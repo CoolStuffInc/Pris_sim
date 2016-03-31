@@ -110,8 +110,12 @@ class Agent(object):
         sim = self.similarity(neighbor)
         if sim ==1 or sim ==0:
             return False
-        elif contagion > random.random:
+        if contagion > random.random():
+            #print "Contagisized"
             return True
+        else:
+            #print "Not contagisized"
+            return False
 
     def isPrisonized(self):
         return True if self.features.curTraits[0] == 1 else False
@@ -146,7 +150,9 @@ class Agent(object):
         # Retrieve neighbor
         neighbor = self.grid.getAgent(row, col)
         # If the agent is influenced, inherit a trait from neighbor
+        #print "Checking influence"
         if self.isInfluenced(neighbor):
+            #print "Agent is inheriting trait"
             self.inheritTrait(neighbor)
 
 '''
@@ -199,8 +205,16 @@ class Grid(object):
                     return False
         return True
 
-# Parameters
+def printSimilarities():
+    for col in range(grid.size):
+        for row in range(grid.size):
+            agent = grid.getAgent(row, col)
+            # print "(" + str(row) + ", " + str(col) + ") " + str(agent.features.curTraits)
+            print agent.similarity(grid.getAgent(row, (col+1) % grid.size))
+            print agent.similarity(grid.getAgent((row+1) % grid.size , col))
 
+
+# Parameters
 gridSize = 3
 prisPct = 0.2
 contagion = 1
@@ -240,10 +254,7 @@ while x > 0:
 print "Starting prisionization: " + str(grid.getPrisPortion())
 print "Loops: " + str(loopCount)
 
-for col in range(grid.size):
-    for row in range(grid.size):
-        agent = grid.getAgent(row, col)
-        print "(" + str(row) + ", " + str(col) + ") " + str(agent.features.curTraits)
+printSimilarities()
 
 # Run the model
 iteration = 0
@@ -255,13 +266,13 @@ while running:
     thisAgent = grid.getAgent(random.randint(0, (grid.size - 1)), random.randint(0, (grid.size - 1)))
     thisAgent.executeModel()
     iteration += 1
-    print str(thisAgent.row) + "," + str(thisAgent.col)
+    # print str(thisAgent.row) + "," + str(thisAgent.col)
     # Only check for equilibrium once in a while to save time
 #    if iteration % 10 == 0:
 #        if grid.isAtEquilibrium():
 #            running = False
     # Temp: 10 iterations
-    if iteration > 10:
+    if iteration > 1000000:
         running = False
 
 '''
@@ -274,7 +285,22 @@ print "Completion time: " + str((millis() - startTime)) + " milliseconds"
 print "Model reached equilibrium after " + str(iteration) + " increments"
 print "Ending prisionization: " + str(grid.getPrisPortion())
 
-for col in range(grid.size):
-    for row in range(grid.size):
-        agent = grid.getAgent(row, col)
-        print "(" + str(row) + ", " + str(col) + ") " + str(agent.features.curTraits)
+printSimilarities()
+
+# for col in range(grid.size):
+#     for row in range(grid.size):
+#         agent = grid.getAgent(row, col)
+#         # print "(" + str(row) + ", " + str(col) + ") " + str(agent.features.curTraits)
+#         neighbor0 = grid.getAgent(row, (col-1))
+#         neighbor1 = grid.getAgent((row-1) , col)
+#         simArray[row+1][col] = agent.similarity(neighbor0)
+#         simArray[row][col+1] = agent.similarity(neighbor1)
+#
+# for row in range(0,len(simArray)):
+#     vector = simArray[row]
+#     print vector
+
+# for col in range(grid.size):
+#     for row in range(grid.size):
+#         agent = grid.getAgent(row, col)
+#         print "(" + str(row) + ", " + str(col) + ") " + str(agent.features.curTraits)
