@@ -108,14 +108,14 @@ class Agent(object):
 
     def isInfluenced(self, neighbor):
         sim = self.similarity(neighbor)
-        print "Similarity: " + str(sim)
+        # print "Similarity: " + str(sim)
         if sim ==1 or sim ==0:
             return False
         if contagion > random.random():
-            print "Contagisized"
+            # print "Contagisized"
             return True
         else:
-            print "Not contagisized"
+            # print "Not contagisized"
             return False
 
     def isPrisonized(self):
@@ -150,11 +150,11 @@ class Agent(object):
             col = (self.col + random.choice([1, -1])) % self.grid.size
         # Retrieve neighbor
         neighbor = self.grid.getAgent(row, col)
-        print "A : " + str(self.row) + ", " + str(self.col) + " N: " + str(row) + ", " + str(col)
+        # print "A : " + str(self.row) + ", " + str(self.col) + " N: " + str(row) + ", " + str(col)
         # If the agent is influenced, inherit a trait from neighbor
-        print "Checking influence"
+        # print "Checking influence"
         if self.isInfluenced(neighbor):
-            print "Agent is inheriting trait"
+            # print "Agent is inheriting trait"
             self.inheritTrait(neighbor)
 
 '''
@@ -211,7 +211,7 @@ def printSimilarities():
     for row in range(grid.size):
         for col in range(grid.size):
             agent = grid.getAgent(row, col)
-            # print "(" + str(row) + ", " + str(col) + ") " + str(agent.features.curTraits)
+            print "(" + str(row) + ", " + str(col) + ") " + str(agent.features.curTraits)
             print agent.similarity(grid.getAgent(row, (col+1) % grid.size))
             print agent.similarity(grid.getAgent((row+1) % grid.size , col))
 
@@ -223,16 +223,23 @@ def printFeatures():
 
 
 # Parameters
-gridSize = 3
-prisPct = 0.2
+gridSize = 10
+prisPct = 0.5
 contagion = 1
+numFeatures = 3
+numTraits = 4
 
 '''
 Set the possible trait counts for the features. In this case, prisionization
 is binary while the other features have some other abitrary number of traits
 associated with them.
 '''
-traitCounts = [2,3,3,3]
+
+traitCounts = [2]
+for x in range(numFeatures):
+    traitCounts.append(numTraits)
+# traitCounts = [2,3,3,3]
+print traitCounts
 
 '''
 Initialize the features class with the number of different traits for each of
@@ -263,27 +270,27 @@ print "Starting prisionization: " + str(grid.getPrisPortion())
 print "Loops: " + str(loopCount)
 
 # printSimilarities()
-printFeatures()
+# printFeatures()
 
 # Run the model
 iteration = 0
 running = True
 startTime = millis()
 while running:
-    print "Time step " + str(iteration)
+    # print "Time step " + str(iteration)
     # Select a random agent for this model step, then execute the model it
     thisAgent = grid.getAgent(random.randint(0, (grid.size - 1)), random.randint(0, (grid.size - 1)))
     thisAgent.executeModel()
     iteration += 1
     # printSimilarities()
-    printFeatures()
+    # printFeatures()
     # print str(thisAgent.row) + "," + str(thisAgent.col)
     # Only check for equilibrium once in a while to save time
     if iteration % 10 == 0:
         if grid.isAtEquilibrium():
             running = False
-    if iteration > 1000:
-        running = False
+    # if iteration > 1000:
+    #     running = False
 
 
 '''
@@ -297,7 +304,7 @@ print "Model reached equilibrium after " + str(iteration) + " increments"
 print "Ending prisionization: " + str(grid.getPrisPortion())
 
 # printSimilarities()
-printFeatures()
+# printFeatures()
 
 # for col in range(grid.size):
 #     for row in range(grid.size):
