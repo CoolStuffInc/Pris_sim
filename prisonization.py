@@ -238,8 +238,6 @@ associated with them.
 traitCounts = [2]
 for x in range(numFeatures):
     traitCounts.append(numTraits)
-# traitCounts = [2,3,3,3]
-print traitCounts
 
 '''
 Initialize the features class with the number of different traits for each of
@@ -292,11 +290,8 @@ while running:
     # if iteration > 1000:
     #     running = False
 
+# Capture model results
 
-'''
-NOTE: There's something wrong with my model, and it's not reaching equilibrium.
-I've been interrupting this cell when I run the model.
-'''
 
 # Report model results
 print "Completion time: " + str((millis() - startTime)) + " milliseconds"
