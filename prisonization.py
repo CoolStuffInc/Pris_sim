@@ -4,7 +4,7 @@
 import random
 import time
 import matplotlib.pyplot as plt
-import numpy
+import numpy as np
 # import seaborn; seaborn.set()
 
 # Helper function for getting the current time in seconds
@@ -238,6 +238,11 @@ associated with them.
 '''
 # def runModel(stepSize, iterations, gridSize, contagion, numFeatures, numTraits):
 
+# Set up output
+runHistory = None
+counter = 0
+
+# Run the model
 stepSize = 100/intervals
 for pct in range(0,101,stepSize):
     prisPct = pct/100.00
@@ -296,12 +301,20 @@ for pct in range(0,101,stepSize):
         # if iteration > 1000:
         #     running = False
 
-    # Capture model results
+        # Capture model results
 
 
     # Report model results
     # print "Completion time: " + str((millis() - startTime)) + " milliseconds"
     # print "Model reached equilibrium after " + str(iteration) + " increments"
-    print "Starting prisionization: " + str(prisPct) + " Ending prisionization: " + str(grid.getPrisPortion())
+
+    # runHistory.append((gridSize, contagion, numFeatures, numTraits, prisPct, str(grid.getPrisPortion)))
+    currentHistory = np.array([gridSize, contagion, numFeatures, numTraits, prisPct, grid.getPrisPortion])
+    if iteration == 0:
+        runHistory = currentHistory
+    else:
+        runHistory = np.vstack((runHistory, currentHistory))
+    counter += 1
 
 # runModel(.1, 1, 10, 1, 4, 3)
+print runHistory
