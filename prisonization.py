@@ -224,97 +224,84 @@ def printFeatures():
 
 # Parameters
 gridSize = 10
-prisPct = 0.5
+# prisPct = 0.4
 contagion = 1
 numFeatures = 3
 numTraits = 4
+intervals = 20
+
 
 '''
 Set the possible trait counts for the features. In this case, prisionization
 is binary while the other features have some other abitrary number of traits
 associated with them.
 '''
+# def runModel(stepSize, iterations, gridSize, contagion, numFeatures, numTraits):
 
-traitCounts = [2]
-for x in range(numFeatures):
-    traitCounts.append(numTraits)
+stepSize = 100/intervals
+for pct in range(0,101,stepSize):
+    prisPct = pct/100.00
+    traitCounts = [2]
+    for x in range(numFeatures):
+        traitCounts.append(numTraits)
 
-'''
-Initialize the features class with the number of different traits for each of
-the features and the initial relative prisionization rate.
-'''
-Features.init(traitCounts)
+    '''
+    Initialize the features class with the number of different traits for each of
+    the features and the initial relative prisionization rate.
+    '''
+    Features.init(traitCounts)
 
-# Initialize the grid size, add agents
-grid = Grid(gridSize)
-for x in range(grid.size):
-    for y in range(grid.size):
-        grid.addAgent(x, y)
+    # Initialize the grid size, add agents
+    grid = Grid(gridSize)
+    for x in range(grid.size):
+        for y in range(grid.size):
+            grid.addAgent(x, y)
 
-# Assign initial prisionization
-x = round(prisPct*grid.getLocationCount())
-loopCount = 0
-while x > 0:
-    loopCount += 1
-    row = random.randint(0,grid.size-1)
-    col = random.randint(0,grid.size-1)
-    agent = grid.getAgent(row, col)
-    if agent.isPrisonized() == False:
-        agent.features.setTrait(0,1)
-        x -= 1
+    # Assign initial prisionization
+    x = round(prisPct*grid.getLocationCount())
+    loopCount = 0
+    while x > 0:
+        loopCount += 1
+        row = random.randint(0,grid.size-1)
+        col = random.randint(0,grid.size-1)
+        agent = grid.getAgent(row, col)
+        if agent.isPrisonized() == False:
+            agent.features.setTrait(0,1)
+            x -= 1
 
-# Report starting state
-print "Starting prisionization: " + str(grid.getPrisPortion())
-print "Loops: " + str(loopCount)
+    # Report starting state
+    # print "Starting prisionization: " + str(grid.getPrisPortion())
+    # print "Loops: " + str(loopCount)
 
-# printSimilarities()
-# printFeatures()
-
-# Run the model
-iteration = 0
-running = True
-startTime = millis()
-while running:
-    # print "Time step " + str(iteration)
-    # Select a random agent for this model step, then execute the model it
-    thisAgent = grid.getAgent(random.randint(0, (grid.size - 1)), random.randint(0, (grid.size - 1)))
-    thisAgent.executeModel()
-    iteration += 1
     # printSimilarities()
     # printFeatures()
-    # print str(thisAgent.row) + "," + str(thisAgent.col)
-    # Only check for equilibrium once in a while to save time
-    if iteration % 10 == 0:
-        if grid.isAtEquilibrium():
-            running = False
-    # if iteration > 1000:
-    #     running = False
 
-# Capture model results
+    # Run the model
+    iteration = 0
+    running = True
+    startTime = millis()
+    while running:
+        # print "Time step " + str(iteration)
+        # Select a random agent for this model step, then execute the model it
+        thisAgent = grid.getAgent(random.randint(0, (grid.size - 1)), random.randint(0, (grid.size - 1)))
+        thisAgent.executeModel()
+        iteration += 1
+        # printSimilarities()
+        # printFeatures()
+        # print str(thisAgent.row) + "," + str(thisAgent.col)
+        # Only check for equilibrium once in a while to save time
+        if iteration % 10 == 0:
+            if grid.isAtEquilibrium():
+                running = False
+        # if iteration > 1000:
+        #     running = False
+
+    # Capture model results
 
 
-# Report model results
-print "Completion time: " + str((millis() - startTime)) + " milliseconds"
-print "Model reached equilibrium after " + str(iteration) + " increments"
-print "Ending prisionization: " + str(grid.getPrisPortion())
+    # Report model results
+    # print "Completion time: " + str((millis() - startTime)) + " milliseconds"
+    # print "Model reached equilibrium after " + str(iteration) + " increments"
+    print "Starting prisionization: " + str(prisPct) + " Ending prisionization: " + str(grid.getPrisPortion())
 
-# printSimilarities()
-# printFeatures()
-
-# for col in range(grid.size):
-#     for row in range(grid.size):
-#         agent = grid.getAgent(row, col)
-#         # print "(" + str(row) + ", " + str(col) + ") " + str(agent.features.curTraits)
-#         neighbor0 = grid.getAgent(row, (col-1))
-#         neighbor1 = grid.getAgent((row-1) , col)
-#         simArray[row+1][col] = agent.similarity(neighbor0)
-#         simArray[row][col+1] = agent.similarity(neighbor1)
-#
-# for row in range(0,len(simArray)):
-#     vector = simArray[row]
-#     print vector
-
-# for col in range(grid.size):
-#     for row in range(grid.size):
-#         agent = grid.getAgent(row, col)
-#         print "(" + str(row) + ", " + str(col) + ") " + str(agent.features.curTraits)
+# runModel(.1, 1, 10, 1, 4, 3)
