@@ -5,6 +5,8 @@ import random
 import time
 import matplotlib.pyplot as plt
 import numpy as np
+import csv
+import datetime
 # import seaborn; seaborn.set()
 
 # Helper function for getting the current time in seconds
@@ -108,14 +110,11 @@ class Agent(object):
 
     def isInfluenced(self, neighbor):
         sim = self.similarity(neighbor)
-        # print "Similarity: " + str(sim)
         if sim ==1 or sim ==0:
             return False
         if contagion > random.random():
-            # print "Contagisized"
             return True
         else:
-            # print "Not contagisized"
             return False
 
     def isPrisonized(self):
@@ -228,7 +227,8 @@ gridSize = 10
 contagion = 1
 numFeatures = 3
 numTraits = 4
-intervals = 20
+intervals = 10
+loops = 100
 
 
 '''
@@ -239,82 +239,61 @@ associated with them.
 # def runModel(stepSize, iterations, gridSize, contagion, numFeatures, numTraits):
 
 # Set up output
-runHistory = None
-counter = 0
-
-# Run the model
-stepSize = 100/intervals
-for pct in range(0,101,stepSize):
-    prisPct = pct/100.00
-    traitCounts = [2]
-    for x in range(numFeatures):
-        traitCounts.append(numTraits)
-
-    '''
-    Initialize the features class with the number of different traits for each of
-    the features and the initial relative prisionization rate.
-    '''
-    Features.init(traitCounts)
-
-    # Initialize the grid size, add agents
-    grid = Grid(gridSize)
-    for x in range(grid.size):
-        for y in range(grid.size):
-            grid.addAgent(x, y)
-
-    # Assign initial prisionization
-    x = round(prisPct*grid.getLocationCount())
-    loopCount = 0
-    while x > 0:
-        loopCount += 1
-        row = random.randint(0,grid.size-1)
-        col = random.randint(0,grid.size-1)
-        agent = grid.getAgent(row, col)
-        if agent.isPrisonized() == False:
-            agent.features.setTrait(0,1)
-            x -= 1
-
-    # Report starting state
-    # print "Starting prisionization: " + str(grid.getPrisPortion())
-    # print "Loops: " + str(loopCount)
-
-    # printSimilarities()
-    # printFeatures()
+with open('pris_output.csv', 'wb') as csvfile:
+    csvoutput = csv.writer(csvfile, delimiter=',',
+                            quotechar = '|', quoting=csv.QUOTE_MINIMAL)
+    csvoutput.writerow(["date", "time", "counter", "gridSize", "contagion", "numFeatures", "numTraits", "prisPct", "endingPrisPortion"])
+    # runHistory = None
+    counter = 0
 
     # Run the model
-    iteration = 0
-    running = True
-    startTime = millis()
-    while running:
-        # print "Time step " + str(iteration)
-        # Select a random agent for this model step, then execute the model it
-        thisAgent = grid.getAgent(random.randint(0, (grid.size - 1)), random.randint(0, (grid.size - 1)))
-        thisAgent.executeModel()
-        iteration += 1
-        # printSimilarities()
-        # printFeatures()
-        # print str(thisAgent.row) + "," + str(thisAgent.col)
-        # Only check for equilibrium once in a while to save time
-        if iteration % 10 == 0:
-            if grid.isAtEquilibrium():
-                running = False
-        # if iteration > 1000:
-        #     running = False
+    stepSize = 100/intervals
+    for pct in range(0,101,stepSize):
+        print pct
+        for loop in range(loops):
+            prisPct = pct/100.00
+            traitCounts = [2]
+            for x in range(numFeatures):
+                traitCounts.append(numTraits)
 
-        # Capture model results
+            '''
+            Initialize the features class with the number of different traits for each of
+            the features and the initial relative prisionization rate.
+            '''
+            Features.init(traitCounts)
 
+            # Initialize the grid size, add agents
+            grid = Grid(gridSize)
+            for x in range(grid.size):
+                for y in range(grid.size):
+                    grid.addAgent(x, y)
 
-    # Report model results
-    # print "Completion time: " + str((millis() - startTime)) + " milliseconds"
-    # print "Model reached equilibrium after " + str(iteration) + " increments"
+            # Assign initial prisionization
+            x = round(prisPct*grid.getLocationCount())
+            loopCount = 0
+            while x > 0:
+                loopCount += 1
+                row = random.randint(0,grid.size-1)
+                col = random.randint(0,grid.size-1)
+                agent = grid.getAgent(row, col)
+                if agent.isPrisonized() == False:
+                    agent.features.setTrait(0,1)
+                    x -= 1
 
-    # runHistory.append((gridSize, contagion, numFeatures, numTraits, prisPct, str(grid.getPrisPortion)))
-    currentHistory = np.array([gridSize, contagion, numFeatures, numTraits, prisPct, grid.getPrisPortion])
-    if iteration == 0:
-        runHistory = currentHistory
-    else:
-        runHistory = np.vstack((runHistory, currentHistory))
-    counter += 1
+            # Run the model
+            iteration = 0
+            running = True
+            startTime = millis()
+            while running:
+                # print "Time step " + str(iteration)
+                # Select a random agent for this model step, then execute the model it
+                thisAgent = grid.getAgent(random.randint(0, (grid.size - 1)), random.randint(0, (grid.size - 1)))
+                thisAgent.executeModel()
+                iteration += 1
+                # Only check for equilibrium once in a while to save time
+                if iteration % 10 == 0:
+                    if grid.isAtEquilibrium():
+                        running = False
 
-# runModel(.1, 1, 10, 1, 4, 3)
-print runHistory
+            # Report model results
+            csvoutput.writerow([datetime.datetime.now().date(), datetime.datetime.now().time(), counter, gridSize, contagion, numFeatures, numTraits, prisPct, grid.getPrisPortion()])
